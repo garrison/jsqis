@@ -61,7 +61,7 @@ jQuery.extend(window.jsqis, (function ($) {
         var oldRotation = this.currentRotation || 0;
         // we want to rotate in the direction that gets us to our destination most directly
         this.currentRotation = oldRotation + safeModulus(Raphael.deg(amplitude.arg()) + 180 - oldRotation, 360) - 180;
-        return "S" + amplitude.abs() + "R" + this.currentRotation;
+        return "S" + amplitude.abs() + "R" + (-this.currentRotation);
     };
     AmplitudeView.calculateBoxColor = function (amplitude) {
         return {fill: "rgba(" + cielchToRGB(80, 35, amplitude.arg()).join(",") + ", .8)", stroke: "rgba(" + cielchToRGB(50, 25, amplitude.arg()).join(",") + ", .8)"};
