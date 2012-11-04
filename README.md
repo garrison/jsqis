@@ -1,9 +1,11 @@
 jsqis: Javascript Quantum Information Simulator
 ===============================================
 
-jsqis, at its core, is a quantum computer simulator written in
-Javascript.  It allows initialization of quantum registers and their
-manipulation by means of quantum gates.
+jsqis, at its core, is a [quantum
+computer](http://en.wikipedia.org/wiki/Quantum_computer) simulator
+written in Javascript.  It allows initialization of quantum registers
+and their manipulation by means of [quantum
+gates](http://en.wikipedia.org/wiki/Quantum_gate).
 
 Additionally, when used in the browser, jsqis provides a lucid visual
 representation of a system of quantum bits.  This representation is
