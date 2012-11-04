@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>jsqis: features</title>
+    <script src="../Complex/lib/Complex.js"></script>
+    <script src="../jquery-submodule/jquery-1.8.2.min.js"></script>
+    <script src="../jsqis-core.js"></script>
+    <script src="../raphael/raphael-min.js"></script>
+    <script src="../jsqis-view.js"></script>
+    <link rel="stylesheet" href="../jsqis-view.css">
+    <script src="features.js"></script>
+  </head>
+  <body>
+    <h1>jsqis: features</h1>
+
+    <p>jsqis, at its core, is a <a href="http://en.wikipedia.org/wiki/Quantum_computer">quantum computer</a> simulator written in Javascript.  It allows initialization of quantum registers and their manipulation by means of <a href="http://en.wikipedia.org/wiki/Quantum_gate">quantum gates</a>.</p>
+
+    <p>Additionally, when used in the browser, jsqis provides a lucid visual representation of a system of quantum bits (qubits).  This representation is mathematically precise, allowing people to reason about quantum computing without having mastered any topics in mathematics.</p>
+
+    <p>In the language of mathematics, we do this by enumerating all the computational basis states and, beside each basis state, displaying its amplitude (which is a complex number) using a simple graphical representation.</p>
+
+    <h2>Single qubit</h2>
+
+    <p>A single bit can be in either of two classical states, zero or one.</p>
+
+    <div id="single-bit-state0"></div>
+    <div id="single-bit-state1"></div>
+
+    <p>A quantum bit can also be in an equal superposition of those two states.</p>
+
+    <div id="single-qubit-superposition"></div>
+
+    <p>Not only that, but the states can have a relative phase difference.</p>
+
+    <div id="single-qubit-relative-phase"></div>
+
+    <p>And they can of course have different amplitudes as well.</p>
+
+    <div id="single-qubit-phase-amplitude"></div>
+
+    <p>When a quantum bit is <a href="http://en.wikipedia.org/wiki/Measurement_in_quantum_mechanics">measured</a>, it will assume a definite value (either zero or one).  The probability that the bit will be measured in a given state is <a href="http://en.wikipedia.org/wiki/Born_rule">proportional to the area of the corresponding box</a>.</p>
+
+    <p>In addition to the arrow representing the relative phase, we color code it as well, choosing a continuous hue based on an amplitude's phase.  This is redundant (as the arrow already encodes the full information), but stresses the fact that phase information is incredibly important in quantum mechanics.</p>
+
+    <div id="single-qubit-phase-amplitude-color"></div>
+
+    Just as in the mathematical representation of quantum mechanics, our states are invariant up to a change in overall magnitude and global phase.  In other words, it is the <em>relative</em> difference between the sizes and the directions of the arrows that matter.  For instance, the following states are all equivalent.
+
+    <div id="invariant-state-1"></div>
+    <div id="invariant-state-2"></div>
+    <div id="invariant-state-3"></div>
+    <div id="invariant-state-4"></div>
+
+    <!--<h3>Bloch sphere</h3>-->
+
+    <h2>Multiple qubits</h2>
+
+    <!--<h3>Bloch sphere</h3>
+
+    <p>It is also possible to visualize multiple qubits on the Bloch sphere (or at least it will be possible soon).</p>-->
+
+    <h2>Operations</h2>
+
+    <h3>Single qubit gates</h3>
+
+    <h3>Multiple qubit gates</h3>
+
+    <h3>Other operations</h3>
+
+    <h4>Randomize</h4>
+
+    <h4>Rescale</h4>
+
+    <!--<p>It's possible to disable automatic rescale and then do it automatically.</p>-->
+
+    <h4>Measure</h4>
+
+    <!--<p>with or without seed</p>-->
+
+    <h2>Planned features</h2>
+
+    <ul>
+      <li>Quantum circuit diagrams, which highlight operations as they take place.</li>
+      <li><a href="http://en.wikipedia.org/wiki/Bloch_sphere">Bloch sphere</a> representation (most likely using <a href="http://mrdoob.github.com/three.js/">three.js</a>)</li>
+    </ul>
+
+  </body>
+</html>

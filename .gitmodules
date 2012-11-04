@@ -4,3 +4,9 @@
 [submodule "Complex"]
 	path = Complex
 	url = https://github.com/garrison/Complex.git
+[submodule "qunit"]
+	path = qunit
+	url = https://github.com/jquery/qunit.git
+[submodule "jquery-submodule"]
+	path = jquery-submodule
+	url = https://github.com/garrison/jquery-submodule.git

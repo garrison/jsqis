@@ -6,7 +6,7 @@
 (function ($) {
     // initialize QuantumBitMachineView's
     $(".jsqis-machine").each(function () {
-        var machine = new jsqis.QuantumBitMachine($(this).data("qubits")),
+        var machine = new jsqis.QuantumBitMachine($(this).data("qubits"), eval("(" + $(this).data("options") + ")")),
             machineView = new jsqis.QuantumBitMachineView(this, machine),
             gate = jsqis.gate;
         //// $(elt).data("machine", machine).data("machineView", machineView);
