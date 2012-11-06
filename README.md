@@ -24,6 +24,11 @@ Install instructions
 After cloning, you will need to use git-submodule to check out the
 various dependencies.
 
+    $ git clone https://github.com/garrison/jsqis.git
+    $ cd jsqis
+    $ git submodule init
+    $ git submodule update
+
 Getting started
 ---------------
 
