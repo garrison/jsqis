@@ -111,18 +111,23 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
             displayBox: this.options.displayBox
         }, tr, td, table = $('<table class="QuantumBitMachineView"></table>');
         for (i = 0; i < machine.amplitudeList.length; ++i) {
-            if (i % 8 == 0)
+            if (i % this.options.amplitudesPerRow == 0)
                 tr = $("<tr></tr>").appendTo(table);
             td = $("<td></td>").appendTo(tr);
             var amplitudeView = new AmplitudeView(machine.amplitudeList[i], amplitudeViewOptions);
             this.amplitudeViewList.push(amplitudeView);
             amplitudeView.elt.appendTo(td);
             td.append("<br/>");
-            $("<span></span>").text(zeroFillBinary(i, machine.nQubits)).appendTo(td);
+            $('<span style="font-size: ' + (100 * this.options.scale) + '%"></span>').text(zeroFillBinary(i, machine.nQubits)).appendTo(td);
         }
         table.appendTo(parentElement);
     };
     QuantumBitMachineView.defaultOptions = {
+        amplitudesPerRow: 8,
+        // these options, if provided, are passed to each AmplitudeView
+        color: undefined,
+        scale: undefined,
+        displayBox: undefined
     };
     QuantumBitMachineView.prototype.update = function (machine) {
         if (machine) {
