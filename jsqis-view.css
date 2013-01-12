@@ -1,3 +1,6 @@
+table.QuantumBitMachineView {
+    display: inline-table;
+}
 .QuantumBitMachineView td {
     text-align: center;
 }
