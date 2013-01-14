@@ -35,4 +35,7 @@
         machine.execute([[jsqis.gate.globalPhase, .5], [jsqis.gate.rescale, 1]]);
         new jsqis.QuantumBitMachineView($("#invariant-state-4"), machine);
     });
+    $(function () {
+        new jsqis.QuantumCircuitView($("#circuit-1"), 4, [[jsqis.gate.X, 0], [jsqis.gate.Z, 2], [jsqis.gate.X, 1], [jsqis.gate.CCNOT, 0, 1, 2], [jsqis.gate.randomize, 333], [jsqis.gate.measure, 253, 3]]);
+    });
 })(jQuery, jsqis);

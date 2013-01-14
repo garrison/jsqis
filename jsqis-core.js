@@ -42,55 +42,60 @@ window.jsqis = (function (Complex, $) {
 
     var gate = {};
 
-    gate.X = new FundamentalQubitGate(1, function (basisState, register) {
+    function registerGate (name, gateObject) {
+        gateObject.name = name;
+        gate[name] = gateObject;
+    }
+
+    registerGate("X", new FundamentalQubitGate(1, function (basisState, register) {
         return [
             [basisState ^ (1 << register), Complex.one]
         ];
-    });
+    }));
 
-    gate.Z = new FundamentalQubitGate(1, function (basisState, register) {
+    registerGate("Z", new FundamentalQubitGate(1, function (basisState, register) {
         return [
             [basisState, basisState & (1 << register) ? complexNegativeOne : Complex.one]
 //            [basisState, basisState & (1 << register) ? Complex.i : complexNegativeI]
         ];
-    });
+    }));
 
-    gate.T = new FundamentalQubitGate(1, function (basisState, register) {
+    registerGate("T", new FundamentalQubitGate(1, function (basisState, register) {
         return [
             [basisState, basisState & (1 << register) ? complexPhasePiOverFour : Complex.one]
 //            [basisState, basisState & (1 << register) ? complexPhasePiOverEight : complexPhaseNegativePiOverEight]
         ];
-    });
+    }));
 
-    gate.H = new FundamentalQubitGate(1, function (basisState, register) {
+    registerGate("H", new FundamentalQubitGate(1, function (basisState, register) {
         return [
             [basisState, basisState & (1 << register) ? complexNegativeInvSqrtTwo : complexInvSqrtTwo],
             [basisState ^ (1 << register), complexInvSqrtTwo]
         ];
-    });
+    }));
 
-    gate.CNOT = new FundamentalQubitGate(2, function (basisState, controlRegister, targetRegister) {
+    registerGate("CNOT", new FundamentalQubitGate(2, function (basisState, controlRegister, targetRegister) {
         return [
             [basisState & (1 << controlRegister) ? basisState ^ (1 << targetRegister) : basisState, Complex.one]
         ];
-    });
+    }));
 
-    gate.CCNOT = new FundamentalQubitGate(3, function (basisState, controlRegister1, controlRegister2, targetRegister) {
+    registerGate("CCNOT", new FundamentalQubitGate(3, function (basisState, controlRegister1, controlRegister2, targetRegister) {
         return [
             [(basisState & (1 << controlRegister1)) && (basisState & (1 << controlRegister2)) ? basisState ^ (1 << targetRegister) : basisState, Complex.one]
         ];
-    });
+    }));
 
-    gate.globalPhase = new FundamentalQubitGate(0, function (basisState, arg) {
+    registerGate("globalPhase", new FundamentalQubitGate(0, function (basisState, arg) {
         return [
             [basisState, Complex.fromPolar(1, arg)]
         ];
-    });
+    }));
 
     // These are not actually gates, but instead special operations
-    gate.randomize = {randomize: true};
-    gate.measure = {measure: true};
-    gate.rescale = {rescale: true};
+    registerGate("randomize", {randomize: true});
+    registerGate("measure", {measure: true});
+    registerGate("rescale", {rescale: true});
 
     /**
      * Represents a quantum register with some number of qubits

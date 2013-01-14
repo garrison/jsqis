@@ -140,9 +140,110 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
         }
     };
 
+    var QuantumCircuitView = function (parentElement, nQubits, operations, options) {
+        // fixme: make operations modifiable (or make it reference a
+        // machine, and have an update() method that also calls the
+        // machine)
+        this.options = $.extend({}, QuantumCircuitView.defaultOptions, options);
+        this.elt = $('<span class="QuantumCircuitView"></span>').appendTo(parentElement);
+        var i, x, y,
+            margin = 10 * this.options.scale,
+            gridSize = this.options.scale * 64 + 2 * this.options.extraPadding,
+            headerHeight = gridSize * 1.5,
+            markerHeight = 10 * this.options.scale,
+            markerOverflow = 6 * this.options.scale,
+            paper = Raphael(this.elt[0], gridSize * nQubits + 1 + 2 * margin, headerHeight + gridSize * operations.length + 1 + 2 * margin + markerHeight / 2);
+
+        // header
+        paper.rect(margin, margin, nQubits * gridSize, headerHeight).attr({fill: "rgba(200, 200, 200, .6)", stroke: "none"});
+        x = (nQubits * gridSize) / 2 + margin;
+        y = gridSize / 2 + margin;
+        paper.text(x, y, nQubits + " " + (nQubits == 1 ? "bit" : "bits")).attr({'font-size': 24 * this.options.scale});
+        // horizontal lines
+        x = nQubits * gridSize + margin;
+        for (i = 0; i < operations.length + 1; ++i) {
+            y = i * gridSize + headerHeight + margin;
+            paper.path("M" + margin + "," + y + " L" + x + "," + y);
+        }
+        paper.path("M" + margin + "," + margin + " L" + x + "," + margin);
+        // vertical lines
+        y = operations.length * gridSize + headerHeight + margin;
+        for (i = 0; i < nQubits + 1; ++i) {
+            x = i * gridSize + margin;
+            paper.path("M" + x + "," + ((i % nQubits == 0 ? 0 : headerHeight) + margin) + " L" + x + "," + y);
+        }
+
+        // display the relevant operation in each cell
+        for (var j = 0; j < operations.length; ++j) {
+            y = headerHeight + gridSize * (j + .5) + margin;
+            var calculateX = function (i) {
+                return gridSize * (nQubits - i - .5) + margin;
+            };
+            gateRenderer[operations[j][0].name](paper, this.options.scale, calculateX, y, operations[j], nQubits);
+        }
+
+        // create the marker
+        if (this.options.showMarker) {
+            this.marker = paper.rect(margin - markerOverflow, margin + headerHeight - markerHeight / 2, gridSize * nQubits + 2 * markerOverflow, markerHeight).attr({fill: '#ff0'});
+        }
+    };
+    QuantumCircuitView.prototype.update = function (operationsComplete) {
+        // fixme: gridSize is defined above
+        var gridSize = this.options.scale * 64 + 2 * this.options.extraPadding;
+        if (this.options.showMarker) {
+            this.marker.animate({transform: 'T0,' + (operationsComplete * gridSize)}, 100);
+        }
+    };
+    QuantumCircuitView.defaultOptions = {
+        showMarker: true,
+        scale: 1,
+        extraPadding: 0
+    };
+
+    var gateRenderer = {
+        X: function (paper, scale, calculateX, y, args) {
+            paper.text(calculateX(args[1]), y, 'X').attr({'font-size': 32 * scale, 'fill': '#a00'});
+        },
+        Z: function (paper, scale, calculateX, y, args) {
+            paper.text(calculateX(args[1]), y, 'Z').attr({'font-size': 32 * scale, 'fill': '#a00'});
+        },
+        T: function (paper, scale, calculateX, y, args) {
+            paper.text(calculateX(args[1]), y, 'T').attr({'font-size': 32 * scale, 'fill': '#a00'});
+        },
+        H: function (paper, scale, calculateX, y, args) {
+            paper.text(calculateX(args[1]), y, 'H').attr({'font-size': 32 * scale, 'fill': '#a00'});
+        },
+        CNOT: function (paper, scale, calculateX, y, args) {
+            paper.circle(calculateX(args[1]), y, 6 * scale).attr({'fill': '#00a'});
+            paper.text(calculateX(args[2]), y, 'X').attr({'font-size': 32 * scale, 'fill': '#a00'});
+        },
+        CCNOT: function (paper, scale, calculateX, y, args) {
+            paper.circle(calculateX(args[1]), y, 6 * scale).attr({'fill': '#00a'});
+            paper.circle(calculateX(args[2]), y, 6 * scale).attr({'fill': '#00a'});
+            paper.text(calculateX(args[3]), y, 'X').attr({'font-size': 32 * scale, 'fill': '#a00'});
+        },
+        randomize: function (paper, scale, calculateX, y, args, nQubits) {
+            for (var i = 0; i < nQubits; ++i) {
+                paper.text(calculateX(i), y, '?').attr({'font-size': 32 * scale, 'fill': '#a00'});
+            }
+        },
+        measure: function (paper, scale, calculateX, y, args) {
+            for (var i = 2; i < args.length; ++i) {
+                // icon from http://raphaeljs.com/icons/ (MIT license, Copyright 2008 Dmitry Baranovskiy)
+                var measurement_icon = "M29.772,26.433l-7.126-7.126c0.96-1.583,1.523-3.435,1.524-5.421C24.169,8.093,19.478,3.401,13.688,3.399C7.897,3.401,3.204,8.093,3.204,13.885c0,5.789,4.693,10.481,10.484,10.481c1.987,0,3.839-0.563,5.422-1.523l7.128,7.127L29.772,26.433zM7.203,13.885c0.006-3.582,2.903-6.478,6.484-6.486c3.579,0.008,6.478,2.904,6.484,6.486c-0.007,3.58-2.905,6.476-6.484,6.484C10.106,20.361,7.209,17.465,7.203,13.885z";
+                paper.path(measurement_icon).attr({fill: "#090", stroke: "none"}).transform("S" + scale + "T" + (calculateX(args[i]) - 16) + "," + (y - 16));
+            }
+        },
+        // these operations should never be passed to a circuit diagram (they should be filtered out first)
+        globalPhase: null,
+        rescale: null
+    };
+
     return {
         AmplitudeView: AmplitudeView,
-        QuantumBitMachineView: QuantumBitMachineView
+        QuantumBitMachineView: QuantumBitMachineView,
+        QuantumCircuitView: QuantumCircuitView,
+        gateRenderer: gateRenderer
     };
 
 })(jQuery, Raphael));
