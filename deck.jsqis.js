@@ -10,6 +10,8 @@
             machineView = new jsqis.QuantumBitMachineView(this, machine, eval("(" + $(this).data("view-options") + ")")),
             circuitViewContainer = $(this).data("circuit-view-container"),
             circuitView = null,
+            photonViewContainer = $(this).data("photon-view-container"),
+            photonView = null,
             operations,
             circuitOperations = [],
             gate = jsqis.gate;
@@ -44,22 +46,43 @@
                     }
                 }
             }
-            $(this).data({machineState: machine, nOperations: circuitOperations.length});
+            $(this).data({
+                machineState: machine,
+                nOperations: circuitOperations.length,
+                machineSlide: machineSlide
+            });
         }).bind('deck.becameCurrent', function (event) {
-            // update the machine's state
+            // update the machine view's state
             machineView.update($(this).data("machineState"));
-            // update the marker in the circuit view
+            // update the marker in the circuit view (if necessary)
             if (circuitView) {
                 circuitView.update($(this).data("nOperations"));
+            }
+            // update the photon polarization and begin animation (if necessary)
+            if (photonView) {
+                photonView.update($(this).data("machineState"));
+                photonView.toggleAnimation(true);
             }
             // fixme: we really want the event to bubble, but not call
             // this same function again on the machineSlide ...
             event.stopPropagation();
+        }).bind('deck.lostCurrent', function (event) {
+            // we do this using setTimeout because $.deck('getSlide') is not updated with the current slide until /after/ the deck.lostCurrent event is triggered.
+            window.setTimeout(function () {
+                if (photonView && machineSlide !== $.deck('getSlide').data('machineSlide')) {
+                    photonView.toggleAnimation(false);
+                }
+            }, 1);
         });
 
         // create a QuantumCircuitView if appropriate
         if (circuitViewContainer) {
             circuitView = new jsqis.QuantumCircuitView($(circuitViewContainer), machine.nQubits, circuitOperations, eval("(" + $(this).data("circuit-view-options") + ")"));
+        }
+
+        // create a PhotonView if appropriate
+        if (photonViewContainer) {
+            photonView = new jsqis.PhotonView($(photonViewContainer), machine, eval("(" + $(this).data("photon-view-options") + ")"));
         }
     });
 })(jQuery, jsqis);
