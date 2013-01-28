@@ -10,7 +10,8 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
         var r1 = 50 * this.options.scale,
             r2 = 5 * this.options.scale;
         this.paper = Raphael(parentElement[0], 2 * r1, 2 * r1);
-        this.paper.circle(r1, r1, r1 - r2).attr({fill: "r#aaa-#fff", stroke: "none"});
+        // see https://github.com/DmitryBaranovskiy/raphael/issues/297
+        this.paper.circle(r1, r1, r1 - r2).attr({fill: "r#aaa-#fff", stroke: "none", opacity: 0});
         this.circle = this.paper.circle(r1, r1, r2).attr({fill: "#00a", stroke: "#00e"});
         this.t = 0;
         this.r3 = r1 - r2;
