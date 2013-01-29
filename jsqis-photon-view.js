@@ -9,7 +9,8 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
         this.options = $.extend({}, PhotonView.defaultOptions, options);
         var r1 = 50 * this.options.scale,
             r2 = 5 * this.options.scale;
-        this.paper = Raphael(parentElement[0], 2 * r1, 2 * r1);
+        this.elt = $('<span class="PhotonView"></span>').appendTo(parentElement);
+        this.paper = Raphael(this.elt[0], 2 * r1, 2 * r1);
         this.paper.circle(r1, r1, r2 / 2).attr({fill: "#aaa", stroke: "none"});
         this.circle = this.paper.circle(r1, r1, r2).attr({fill: "#00a", stroke: "#00e"});
         this.t = 0;
