@@ -14,10 +14,12 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
         this.paper = Raphael(this.elt[0], 2 * r1, 2 * r1);
         this.paper.circle(r1, r1, r2 / 2).attr({fill: "#aaa", stroke: "none"});
         this.circle = this.paper.circle(r1, r1, r2).attr({fill: "#00a", stroke: "#00e"});
-        this.originTime = new Date().getTime();
         this.r3 = r1 - r2;
         this.update(machine);
-        this.render();
+        this.offsetTime = 0;
+        this.lastFrameTime = 0;
+        this.animationInProgress = false;
+        this.render(0);
     };
     PhotonView.defaultOptions = {
         scale: 1
@@ -37,11 +39,16 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
     PhotonView.prototype.toggleAnimation = function (status) {
         var self = this;
         var animateFrame = function (time) {
-            self.render((time - self.originTime) / 200);
+            if (!self.animationInProgress) {
+                self.offsetTime += time - self.lastFrameTime;
+                self.animationInProgress = true;
+            }
+            self.lastFrameTime = time;
+            self.render((time - self.offsetTime) / 200);
             self.intervalID = window.requestAnimationFrame(animateFrame);
         };
         if (status === undefined) {
-            // if status is not given, switch it.
+            // if status is not given, toggle it.
             status = (this.intervalID === undefined);
         }
         if (status && this.intervalID === undefined) {
@@ -51,6 +58,7 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
             // stop animation
             window.cancelAnimationFrame(this.intervalID);
             this.intervalID = undefined;
+            this.animationInProgress = false;
         }
     };
 
