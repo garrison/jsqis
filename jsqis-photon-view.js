@@ -1,10 +1,12 @@
+/*global math, jQuery, Raphael */
+
 // depends: jsqis-core.js
 //
 // depends: jQuery
 // depends: raphael
 // depends: requestAnimationFrame browser support || rAF.js
 
-jQuery.extend(window.jsqis, (function ($, Raphael) {
+jQuery.extend(window.jsqis, (function ($) {
 
     var PhotonView = function (parentElement, machine, options) {
         this.options = $.extend({}, PhotonView.defaultOptions, options);
@@ -26,10 +28,10 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
     };
     PhotonView.prototype.update = function (machine) {
         // fixme: assert machine.nQubits == 1
-        this.amplitude1 = machine.amplitudeList[0].abs();
-        this.amplitude2 = machine.amplitudeList[1].abs();
-        this.phase1 = machine.amplitudeList[0].arg();
-        this.phase2 = machine.amplitudeList[1].arg();
+        this.amplitude1 = math.abs(machine.amplitudeList[0]);
+        this.amplitude2 = math.abs(machine.amplitudeList[1]);
+        this.phase1 = math.arg(machine.amplitudeList[0]);
+        this.phase2 = math.arg(machine.amplitudeList[1]);
     };
     PhotonView.prototype.render = function (t) {
         var x = this.amplitude2 * Math.sin(t + this.phase2),
@@ -66,4 +68,4 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
         PhotonView: PhotonView
     };
 
-})(jQuery, Raphael));
+})(jQuery));

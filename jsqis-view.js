@@ -1,9 +1,11 @@
+/*global math, jQuery, Raphael */
+
 // depends: jsqis-core.js
 //
 // depends: jQuery
 // depends: raphael
 
-jQuery.extend(window.jsqis, (function ($, Raphael) {
+jQuery.extend(window.jsqis, (function ($) {
 
     // we use the cielab color space so each hue has the same perceived intensity.
     function cielchToRGB (l, c, h) {
@@ -67,19 +69,19 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
         // returns Raphael "transform" string from amplitude
         var oldRotation = this.currentRotation || 0;
         // we want to rotate in the direction that gets us to our destination most directly
-        this.currentRotation = oldRotation + safeModulus(Raphael.deg(amplitude.arg()) + 180 - oldRotation, 360) - 180;
-        return "S" + amplitude.abs() + "R" + (-this.currentRotation);
+        this.currentRotation = oldRotation + safeModulus(Raphael.deg(math.arg(amplitude)) + 180 - oldRotation, 360) - 180;
+        return "S" + math.abs(amplitude) + "R" + (-this.currentRotation);
     };
     AmplitudeView.prototype.calculateBoxColor = function (amplitude) {
         if (!this.options.displayBox) {
             return {fill: "rgba(0, 0, 0, 0)", stroke: "rgba(0, 0, 0, 0)"};
         }
-        var arg = amplitude.arg(),
+        var arg = math.arg(amplitude),
             color = this.options.color;
         return {fill: "rgba(" + cielchToRGB(80, color ? 35 : 0, arg).join(",") + ", .8)", stroke: "rgba(" + cielchToRGB(50, color ? 25 : 0, arg).join(",") + ", .8)"};
     };
     AmplitudeView.prototype.calculateArrowColor = function (amplitude) {
-        var arg = amplitude.arg(),
+        var arg = math.arg(amplitude),
             color = this.options.color;
         return {fill: "rgb(" + cielchToRGB(55, color ? 25 : 0, arg).join(",") + ")", stroke: "rgb(" + cielchToRGB(35, color ? 15 : 0, arg).join(",") + ")"};
     };
@@ -246,4 +248,4 @@ jQuery.extend(window.jsqis, (function ($, Raphael) {
         gateRenderer: gateRenderer
     };
 
-})(jQuery, Raphael));
+})(jQuery));

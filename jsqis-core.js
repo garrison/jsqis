@@ -1,7 +1,11 @@
-// depends: Complex.js
+/*global math, jQuery */
+
+// depends: mathjs
 // depends: jQuery (very lightly)
 
-window.jsqis = (function (Complex, $) {
+window.jsqis = (function () {
+
+    var extend = jQuery.extend; // _.extend would also work here
 
     function AssertionError(message) {
         this.message = message;
@@ -26,14 +30,11 @@ window.jsqis = (function (Complex, $) {
         });
     };
 
-    var complexZero = new Complex(0, 0).finalize();
-    var complexNegativeOne = new Complex(-1, 0).finalize();
-    var complexNegativeI = new Complex(0, -1).finalize();
-    var complexInvSqrtTwo = new Complex(Math.sqrt(2) / 2, 0).finalize();
-    var complexNegativeInvSqrtTwo = new Complex(-Math.sqrt(2) / 2, 0).finalize();
-    var complexPhasePiOverFour = Complex.fromPolar(1, Math.PI / 4).finalize();
-    var complexPhasePiOverEight = Complex.fromPolar(1, Math.PI / 8).finalize();
-    var complexPhaseNegativePiOverEight = Complex.fromPolar(1, -Math.PI / 8).finalize();
+    var invSqrtTwo = Math.sqrt(2) / 2;
+    var negativeInvSqrtTwo = -Math.sqrt(2) / 2;
+    var complexPhasePiOverFour = math.exp(math.complex(0, Math.PI / 4));
+    var complexPhasePiOverEight = math.exp(math.complex(0, Math.PI / 8));
+    var complexPhaseNegativePiOverEight = math.exp(math.complex(0, -Math.PI / 8));
 
     var FundamentalQubitGate = function (nQubits, mapFunc) {
         this.nQubits = nQubits;
@@ -49,46 +50,46 @@ window.jsqis = (function (Complex, $) {
 
     registerGate("X", new FundamentalQubitGate(1, function (basisState, register) {
         return [
-            [basisState ^ (1 << register), Complex.one]
+            [basisState ^ (1 << register), 1]
         ];
     }));
 
     registerGate("Z", new FundamentalQubitGate(1, function (basisState, register) {
         return [
-            [basisState, basisState & (1 << register) ? complexNegativeOne : Complex.one]
-//            [basisState, basisState & (1 << register) ? Complex.i : complexNegativeI]
+            [basisState, basisState & (1 << register) ? -1 : 1]
+//            [basisState, basisState & (1 << register) ? math.complex(0, 1) : math.complex(0, -1)]
         ];
     }));
 
     registerGate("T", new FundamentalQubitGate(1, function (basisState, register) {
         return [
-            [basisState, basisState & (1 << register) ? complexPhasePiOverFour : Complex.one]
+            [basisState, basisState & (1 << register) ? complexPhasePiOverFour : 1]
 //            [basisState, basisState & (1 << register) ? complexPhasePiOverEight : complexPhaseNegativePiOverEight]
         ];
     }));
 
     registerGate("H", new FundamentalQubitGate(1, function (basisState, register) {
         return [
-            [basisState, basisState & (1 << register) ? complexNegativeInvSqrtTwo : complexInvSqrtTwo],
-            [basisState ^ (1 << register), complexInvSqrtTwo]
+            [basisState, basisState & (1 << register) ? negativeInvSqrtTwo : invSqrtTwo],
+            [basisState ^ (1 << register), invSqrtTwo]
         ];
     }));
 
     registerGate("CNOT", new FundamentalQubitGate(2, function (basisState, controlRegister, targetRegister) {
         return [
-            [basisState & (1 << controlRegister) ? basisState ^ (1 << targetRegister) : basisState, Complex.one]
+            [basisState & (1 << controlRegister) ? basisState ^ (1 << targetRegister) : basisState, 1]
         ];
     }));
 
     registerGate("CCNOT", new FundamentalQubitGate(3, function (basisState, controlRegister1, controlRegister2, targetRegister) {
         return [
-            [(basisState & (1 << controlRegister1)) && (basisState & (1 << controlRegister2)) ? basisState ^ (1 << targetRegister) : basisState, Complex.one]
+            [(basisState & (1 << controlRegister1)) && (basisState & (1 << controlRegister2)) ? basisState ^ (1 << targetRegister) : basisState, 1]
         ];
     }));
 
     registerGate("globalPhase", new FundamentalQubitGate(0, function (basisState, arg) {
         return [
-            [basisState, Complex.fromPolar(1, arg)]
+            [basisState, math.exp(math.complex(0, arg))]
         ];
     }));
 
@@ -103,11 +104,11 @@ window.jsqis = (function (Complex, $) {
     var QuantumBitMachine = function (nQubits, options) {
         assert(nQubits > 0 && nQubits < 24);
         this.nQubits = nQubits;
-        this.options = $.extend({}, QuantumBitMachine.defaultOptions, options);
+        this.options = extend({}, QuantumBitMachine.defaultOptions, options);
         var nBasisStates = 1 << nQubits;
-        this.amplitudeList = [Complex.one];
+        this.amplitudeList = [1];
         for (var i = 1; i < nBasisStates; ++i) {
-            this.amplitudeList.push(complexZero);
+            this.amplitudeList.push(0);
         }
     };
     QuantumBitMachine.defaultOptions = {
@@ -130,7 +131,7 @@ window.jsqis = (function (Complex, $) {
     };
     QuantumBitMachine.prototype.copy = function () {
         // http://stackoverflow.com/a/122704/1558890
-        return $.extend({}, this);
+        return extend({}, this);
     };
     QuantumBitMachine.prototype.executeCommand = function (command) {
         var i, j, k, newAmplitudeList = [], rng;
@@ -142,15 +143,15 @@ window.jsqis = (function (Complex, $) {
             // fixme: assert command.length == command[0].nQubits + 1; EXCEPT in the case of globalPhase (where nQubits == 0)
             // fixme: assert each register is specified no more than once
             for (j = 0; j < this.amplitudeList.length; ++j) {
-                newAmplitudeList.push(complexZero.clone());
+                newAmplitudeList.push(0);
             }
             for (i = 0; i < this.amplitudeList.length; ++i) {
-                if (!this.amplitudeList[i].equals(complexZero)) {
+                if (!math.equal(this.amplitudeList[i], 0)) {
                     var output = command[0].mapFunc.apply(null, [i].concat(command.slice(1)));
                     for (k = 0; k < output.length; ++k) {
                         var bs = output[k][0], amp = output[k][1];
                         // fixme: assert bs < this.amplitudeList.length
-                        newAmplitudeList[bs].add(amp.clone().mult(this.amplitudeList[i]));
+                        newAmplitudeList[bs] = math.add(newAmplitudeList[bs], math.multiply(amp, this.amplitudeList[i]));
                     }
                 }
             }
@@ -168,18 +169,18 @@ window.jsqis = (function (Complex, $) {
                 var newAmplitude = this.amplitudeList[i];
                 for (j = 0; j < registers.length; ++j) {
                     if ((i & (1 << registers[j])) != (target[j] << registers[j])) {
-                        newAmplitude = complexZero;
+                        newAmplitude = 0;
                         break;
                     }
                 }
-                newAmplitudeList.push(newAmplitude.clone());
+                newAmplitudeList.push(newAmplitude);
             }
         } else if (command[0].randomize) {
             // it's a randomize operation
             // fixme: assert there's just one argument (the seed)
             rng = createRNG(command[1]);
             for (j = 0; j < this.amplitudeList.length; ++j) {
-                newAmplitudeList.push(Complex.fromPolar(rng(), 2 * Math.PI * rng()).finalize());
+                newAmplitudeList.push(math.multiply(rng(), math.exp(math.complex(0, 2 * Math.PI * rng()))));
             }
         } else if (command[0].rescale) {
             // we don't actually do anything, but we still need to set newAmplitudeList
@@ -207,12 +208,12 @@ window.jsqis = (function (Complex, $) {
             if (typeof rescaleStrategy === 'number') {
                 var psiMagnitudeSquared = 0;
                 for (j = 0; j < newAmplitudeList.length; ++j) {
-                    psiMagnitudeSquared += newAmplitudeList[j].magnitude() * newAmplitudeList[j].magnitude();
+                    psiMagnitudeSquared += math.square(math.abs(newAmplitudeList[j]));
                 }
                 rescaleInverse = Math.sqrt(psiMagnitudeSquared) / rescaleStrategy;
             } else if (rescaleStrategy == 'max') {
                 for (j = 0; j < newAmplitudeList.length; ++j) {
-                    var m = newAmplitudeList[j].magnitude();
+                    var m = math.abs(newAmplitudeList[j]);
                     if (m > rescaleInverse) {
                         rescaleInverse = m;
                     }
@@ -221,8 +222,7 @@ window.jsqis = (function (Complex, $) {
                 // invalid rescale strategy
             }
             for (j = 0; j < newAmplitudeList.length; ++j) {
-                // NOTE: this divide function likely modifies in place, so we copy first...
-                newAmplitudeList[j] = newAmplitudeList[j].clone().divide(rescaleInverse);
+                newAmplitudeList[j] = math.divide(newAmplitudeList[j], rescaleInverse);
             }
         }
         this.amplitudeList = newAmplitudeList;
@@ -245,4 +245,4 @@ window.jsqis = (function (Complex, $) {
         QuantumBitMachine: QuantumBitMachine
     };
 
-})(Complex, jQuery);
+})();
