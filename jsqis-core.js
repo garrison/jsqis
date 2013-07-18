@@ -1,12 +1,12 @@
-/*global math, jQuery */
+/*global math, _, jQuery */
 
 // depends: mathjs
-// depends: jQuery (very lightly)
+// depends: jQuery or underscore.js (very lightly)
 // depends: seedrandom.js (optionally, for reproducable simulations)
 
 window.jsqis = (function () {
 
-    var extend = jQuery.extend; // _.extend would also work here
+    var extend = jQuery ? jQuery.extend : _.extend;
 
     function AssertionError(message) {
         this.message = message;
