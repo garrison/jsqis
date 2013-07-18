@@ -10,3 +10,6 @@
 [submodule "mathjs"]
 	path = mathjs
 	url = https://github.com/josdejong/mathjs.git
+[submodule "seedrandom"]
+	path = seedrandom
+	url = https://github.com/davidbau/seedrandom.git

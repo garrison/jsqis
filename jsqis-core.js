@@ -2,6 +2,7 @@
 
 // depends: mathjs
 // depends: jQuery (very lightly)
+// depends: seedrandom.js (optionally, for reproducable simulations)
 
 window.jsqis = (function () {
 
@@ -19,16 +20,6 @@ window.jsqis = (function () {
             throw new AssertionError(message || "unspecified error");
         }
     }
-
-    // adapted from http://www.learncpp.com/cpp-tutorial/59-random-number-generation/
-    function createRNG (seed) {
-        var state = seed;
-        return (function () {
-            state = 8253729 * state + 2396403;
-            state %= 1000000000000;
-            return (state % 32767) / 32767; // in range [0, 1);
-        });
-    };
 
     var invSqrtTwo = Math.sqrt(2) / 2;
     var negativeInvSqrtTwo = -Math.sqrt(2) / 2;
@@ -159,11 +150,12 @@ window.jsqis = (function () {
             // it's a measurement
             // fixme: assert each register is correct and none is specified more than once
             // FIXME XXX: actually compute probabilities
-            rng = createRNG(command[1]); // fixme: seed it using a global RNG if no seed is given explicitly
+            if (Math.seedrandom)
+                Math.seedrandom(command[1]);
             var registers = command.slice(2),
                 target = [];
             for (j = 0; j < registers.length; ++j) {
-                target.push((rng() < .5) ? 0 : 1);
+                target.push((Math.random() < .5) ? 0 : 1);
             }
             for (i = 0; i < this.amplitudeList.length; ++i) {
                 var newAmplitude = this.amplitudeList[i];
@@ -178,9 +170,10 @@ window.jsqis = (function () {
         } else if (command[0].randomize) {
             // it's a randomize operation
             // fixme: assert there's just one argument (the seed)
-            rng = createRNG(command[1]);
+            if (Math.seedrandom)
+                Math.seedrandom(command[1]);
             for (j = 0; j < this.amplitudeList.length; ++j) {
-                newAmplitudeList.push(math.multiply(rng(), math.exp(math.complex(0, 2 * Math.PI * rng()))));
+                newAmplitudeList.push(math.multiply(Math.random(), math.exp(math.complex(0, 2 * Math.PI * Math.random()))));
             }
         } else if (command[0].rescale) {
             // we don't actually do anything, but we still need to set newAmplitudeList
