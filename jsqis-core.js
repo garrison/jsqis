@@ -59,6 +59,12 @@ window.jsqis = (function () {
         ];
     }));
 
+    registerGate("Rtheta", new FundamentalQubitGate(1, function (basisState, register, arg) {
+        return [
+            [basisState, basisState & (1 << register) ? math.exp(math.complex(0, arg)) : 1]
+        ];
+    }));
+
     registerGate("H", new FundamentalQubitGate(1, function (basisState, register) {
         return [
             [basisState, basisState & (1 << register) ? negativeInvSqrtTwo : invSqrtTwo],
