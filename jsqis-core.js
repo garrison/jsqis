@@ -23,9 +23,9 @@ window.jsqis = (function () {
 
     var invSqrtTwo = Math.sqrt(2) / 2;
     var negativeInvSqrtTwo = -Math.sqrt(2) / 2;
-    var complexPhasePiOverFour = math.exp(math.complex(0, Math.PI / 4));
-    var complexPhasePiOverEight = math.exp(math.complex(0, Math.PI / 8));
-    var complexPhaseNegativePiOverEight = math.exp(math.complex(0, -Math.PI / 8));
+    var complexPhasePiOverFour = math.complex({r: 1, phi: Math.PI / 4});
+    var complexPhasePiOverEight = math.complex({r: 1, phi: Math.PI / 8});
+    var complexPhaseNegativePiOverEight = math.complex({r: 1, phi: -Math.PI / 8});
 
     var FundamentalQubitGate = function (nQubits, mapFunc) {
         this.nQubits = nQubits;
@@ -60,8 +60,9 @@ window.jsqis = (function () {
     }));
 
     registerGate("Rtheta", new FundamentalQubitGate(1, function (basisState, register, arg) {
+        var phase = math.complex({r: 1, phi: arg});
         return [
-            [basisState, basisState & (1 << register) ? math.exp(math.complex(0, arg)) : 1]
+            [basisState, basisState & (1 << register) ? phase : 1]
         ];
     }));
 
@@ -85,8 +86,9 @@ window.jsqis = (function () {
     }));
 
     registerGate("globalPhase", new FundamentalQubitGate(0, function (basisState, arg) {
+        var phase = math.complex({r: 1, phi: arg});
         return [
-            [basisState, math.exp(math.complex(0, arg))]
+            [basisState, phase]
         ];
     }));
 
@@ -179,7 +181,7 @@ window.jsqis = (function () {
             if (Math.seedrandom)
                 Math.seedrandom(command[1]);
             for (j = 0; j < this.amplitudeList.length; ++j) {
-                newAmplitudeList.push(math.multiply(Math.random(), math.exp(math.complex(0, 2 * Math.PI * Math.random()))));
+                newAmplitudeList.push(math.complex({r: Math.random(), phi: 2 * Math.PI * Math.random()}));
             }
         } else if (command[0].rescale) {
             // we don't actually do anything, but we still need to set newAmplitudeList
