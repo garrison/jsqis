@@ -21,13 +21,14 @@ given at the LA Hacker News Meetup.
 Install instructions
 --------------------
 
-After cloning, you will need to use git-submodule to check out the
-various dependencies.
+After cloning, you will need to use npm to install the various
+dependencies.
 
     $ git clone https://github.com/garrison/jsqis.git
-    $ cd jsqis
-    $ git submodule init
-    $ git submodule update
+    $ npm install
+
+There is not yet a system for building/distributing jsqis through npm,
+however.  (Patches/gulpfiles welcome!)
 
 Getting started
 ---------------
