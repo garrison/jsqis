@@ -1,6 +1,6 @@
 {
     "name": "jsqis",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "quantum information simulator",
     "author": "Jim Garrison <jim@garrison.cc> (http://jimgarrison.org)",
     "repository": {
@@ -12,9 +12,9 @@
     },
     "license": "MIT",
     "dependencies": {
-	"mathjs": "~0.27.0",
+	"mathjs": "^7.1.0",
 	"seedrandom": "~2.3.10",
-	"jquery": "~1.11.1",
+	"jquery": "^3.5.0",
 	"qunitjs": "~1.15.0",
 	"raphael": "~2.1.0",
 	"raf": "~2.0.3"
