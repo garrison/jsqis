@@ -1,6 +1,6 @@
 {
     "name": "jsqis",
-    "version": "0.1.0pre",
+    "version": "0.1.0",
     "description": "quantum information simulator",
     "author": "Jim Garrison <jim@garrison.cc> (http://jimgarrison.org)",
     "repository": {
