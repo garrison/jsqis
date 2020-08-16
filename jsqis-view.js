@@ -49,16 +49,23 @@ jQuery.extend(window.jsqis, (function ($) {
         this.options = $.extend({}, AmplitudeView.defaultOptions, options);
 
         this.elt = $("<span></span>");
-        var scale = this.options.scale,
-            paper = Raphael(this.elt[0], 74 * scale, 74 * scale);
+        var scale = 3.2 * this.options.scale,
+            paper = Raphael(this.elt[0], 26 * scale, 26 * scale);
 
-        this.box = paper.rect(12 * scale, 12 * scale, 50 * scale, 50 * scale);
-        this.arrow = paper.path("M" + (37 * scale) + "," + (62 * scale) + "v" + (-43 * scale) + "l" + (-3 * scale) + ",0l" + (3 * scale) + "," + (-6 * scale) + "l" + (3 * scale) + "," + (6 * scale) + "h" + (-3 * scale) + "z");
+        this.box = paper.rect(4 * scale, 4 * scale, 18 * scale, 18 * scale);
+        this.arrow = paper.path("M" + (13 * scale) + "," + (5 * scale) +
+                                "l" + (5 * scale) + "," + (5 * scale) +
+                                "l" + (-4 * scale) + "," + (-1 * scale) +
+                                "v" + (12 * scale) +
+                                "h" + (-2 * scale) +
+                                "v" + (-12 * scale) +
+                                "l" + (-4 * scale) + "," + (1 * scale) +
+                                "z");
         this.obj = paper.set().push(this.box, this.arrow);
 
         this.obj.transform(this.calculateTransform(initialAmplitude));
-        this.box.attr(this.calculateBoxColor(initialAmplitude));
-        this.arrow.animate(this.calculateArrowColor(initialAmplitude));
+        this.box.attr(this.calculateBoxAttr(initialAmplitude));
+        this.arrow.animate(this.calculateArrowAttr(initialAmplitude));
     };
     AmplitudeView.defaultOptions = {
         scale: 1,
@@ -69,27 +76,34 @@ jQuery.extend(window.jsqis, (function ($) {
         // returns Raphael "transform" string from amplitude
         var oldRotation = this.currentRotation || 0;
         // we want to rotate in the direction that gets us to our destination most directly
-        this.currentRotation = oldRotation + safeModulus(Raphael.deg(math.arg(amplitude)) + 180 - oldRotation, 360) - 180;
-        return "S" + math.abs(amplitude) + "R" + (-this.currentRotation);
+	//alert(amplitude);
+        this.currentRotation = oldRotation + safeModulus(Raphael.deg(amplitude.arg()) + 180 - oldRotation, 360) - 180;
+        return "S" + amplitude.abs() + "R" + (-this.currentRotation);
     };
-    AmplitudeView.prototype.calculateBoxColor = function (amplitude) {
+    AmplitudeView.prototype.calculateBoxAttr = function (amplitude) {
         if (!this.options.displayBox) {
             return {fill: "rgba(0, 0, 0, 0)", stroke: "rgba(0, 0, 0, 0)"};
         }
-        var arg = math.arg(amplitude),
-            color = this.options.color;
-        return {fill: "rgba(" + cielchToRGB(80, color ? 35 : 0, arg).join(",") + ", .8)", stroke: "rgba(" + cielchToRGB(50, color ? 25 : 0, arg).join(",") + ", .8)"};
+        var arg = amplitude.arg(),
+            color = this.options.color,
+            scale = 3.2 * this.options.scale;
+        return {
+            fill: "rgba(" + cielchToRGB(80, color ? 35 : 0, arg).join(",") + ", .8)",
+            stroke: "rgb(0, 0, 0)",
+            "stroke-width": 2 * scale * amplitude.abs()
+        };
     };
-    AmplitudeView.prototype.calculateArrowColor = function (amplitude) {
-        var arg = math.arg(amplitude),
-            color = this.options.color;
-        return {fill: "rgb(" + cielchToRGB(55, color ? 25 : 0, arg).join(",") + ")", stroke: "rgb(" + cielchToRGB(35, color ? 15 : 0, arg).join(",") + ")"};
+    AmplitudeView.prototype.calculateArrowAttr = function (amplitude) {
+        return {
+            fill: "rgb(0, 0, 0)",
+            stroke: "rgb(0, 0, 0)"
+        };
     };
     AmplitudeView.prototype.update = function (amplitude) {
         // fixme: only do transform if something actually changed
         this.obj.animate({transform: this.calculateTransform(amplitude)}, 200, "back-out");
-        this.box.animate(this.calculateBoxColor(amplitude), 200, "back-out");
-        this.arrow.animate(this.calculateArrowColor(amplitude), 200, "back-out");
+        this.box.animate(this.calculateBoxAttr(amplitude), 200, "back-out");
+        this.arrow.animate(this.calculateArrowAttr(amplitude), 200, "back-out");
     };
 
     function zeroFillBinary (number, width) {
@@ -112,6 +126,7 @@ jQuery.extend(window.jsqis, (function ($) {
             scale: this.options.scale,
             displayBox: this.options.displayBox
         }, tr, td, table = $('<table class="QuantumBitMachineView"></table>');
+        table.addClass('nqubits-' + machine.nQubits);
         for (i = 0; i < machine.amplitudeList.length; ++i) {
             if (i % this.options.amplitudesPerRow == 0)
                 tr = $("<tr></tr>").appendTo(table);
@@ -120,7 +135,7 @@ jQuery.extend(window.jsqis, (function ($) {
             this.amplitudeViewList.push(amplitudeView);
             amplitudeView.elt.appendTo(td);
             td.append("<br/>");
-            $('<span style="font-size: ' + (100 * this.options.scale) + '%"></span>').text(zeroFillBinary(i, machine.nQubits)).appendTo(td);
+            $('<span></span>').text(zeroFillBinary(i, machine.nQubits)).appendTo(td);
         }
         table.appendTo(parentElement);
     };
