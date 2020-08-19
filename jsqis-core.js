@@ -1,10 +1,6 @@
-/*global math, _, jQuery */
-
 const assert = console.assert;
 import Complex from 'complex.js';
-import {
-    extend
-} from 'underscore';
+import { default as extend } from 'lodash.assignin';
 import seedrandom from 'seedrandom';
 Math.seedrandom = seedrandom; // FIXME
 
