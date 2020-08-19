@@ -48,7 +48,7 @@ jQuery.extend(window.jsqis, (function ($) {
     var AmplitudeView = function (initialAmplitude, options) {
         this.options = $.extend({}, AmplitudeView.defaultOptions, options);
 
-        this.elt = $("<span></span>");
+        this.elt = $('<span class="AmplitudeView"></span>');
         var scale = 3.2 * this.options.scale,
             paper = Raphael(this.elt[0], 26 * scale, 26 * scale);
 
