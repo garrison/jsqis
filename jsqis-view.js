@@ -1,11 +1,6 @@
-/*global math, jQuery, Raphael */
-
-// depends: jsqis-core.js
-//
-// depends: jQuery
-// depends: raphael
-
-jQuery.extend(window.jsqis, (function ($) {
+import jQuery from "jquery";
+const $ = jQuery;
+const Raphael = require("raphael");
 
     // we use the cielab color space so each hue has the same perceived intensity.
     function cielchToRGB (l, c, h) {
@@ -256,11 +251,11 @@ jQuery.extend(window.jsqis, (function ($) {
         rescale: null
     };
 
-    return {
+    const jsqis_view = {
         AmplitudeView: AmplitudeView,
         QuantumBitMachineView: QuantumBitMachineView,
         QuantumCircuitView: QuantumCircuitView,
         gateRenderer: gateRenderer
     };
 
-})(jQuery));
+    export default jsqis_view;
