@@ -1,12 +1,6 @@
-/*global math, jQuery, Raphael */
-
-// depends: jsqis-core.js
-//
-// depends: jQuery
-// depends: raphael
-// depends: requestAnimationFrame browser support || rAF.js
-
-jQuery.extend(window.jsqis, (function ($) {
+import jQuery from "jquery";
+const $ = jQuery;
+const Raphael = require("raphael");
 
     var PhotonView = function (parentElement, machine, options) {
         this.options = $.extend({}, PhotonView.defaultOptions, options);
@@ -64,8 +58,4 @@ jQuery.extend(window.jsqis, (function ($) {
         }
     };
 
-    return {
-        PhotonView: PhotonView
-    };
-
-})(jQuery));
+export default PhotonView;
