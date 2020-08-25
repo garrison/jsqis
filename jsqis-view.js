@@ -1,3 +1,8 @@
+// TODO: http://youmightnotneedjquery.com/
+// see also http://garystorey.com/2017/02/27/three-ways-to-create-dom-elements-without-jquery/
+
+// TODO: possibly https://github.com/umdjs/umd/blob/master/templates/returnExports.js
+
 import jQuery from "jquery";
 const $ = jQuery;
 const Raphael = require("raphael");
