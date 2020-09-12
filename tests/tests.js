@@ -1,19 +1,19 @@
-module("assertion framework");
-test("assert passed", function () {
-    ok(jsqis.assert(true) === undefined, "Passed!");
+QUnit.module("assertion framework");
+QUnit.test("assert passed", function (assert) {
+    assert.equal(jsqis.assert(true), undefined, "Passed!");
 });
-test("assert failed", function () {
-    throws(function () {
+QUnit.test("assert failed", function (assert) {
+    assert.throws(function () {
         jsqis.assert(false);
     }, "Passed!");
 });
 
-module("QuantumBitMachine options");
-test("default options", function () {
+QUnit.module("QuantumBitMachine options");
+QUnit.test("default options", function (assert) {
     var machine = new jsqis.QuantumBitMachine(1);
-    strictEqual(machine.options.rescaleStrategy, "unity");
+    assert.strictEqual(machine.options.rescaleStrategy, "unity");
 });
-test("override default options", function () {
+QUnit.test("override default options", function (assert) {
     var machine = new jsqis.QuantumBitMachine(1, {rescaleStrategy: "max"});
-    strictEqual(machine.options.rescaleStrategy, "max");
+    assert.strictEqual(machine.options.rescaleStrategy, "max");
 });
